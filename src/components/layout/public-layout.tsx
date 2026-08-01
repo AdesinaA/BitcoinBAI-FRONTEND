@@ -23,9 +23,14 @@ export function PublicLayout({ children, className }: PublicLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="container flex h-16 items-center justify-between gap-4">
-          <Logo />
-          <nav aria-label="Public" className="flex items-center gap-2">
+        <div className="container flex flex-col gap-2 py-3 sm:h-16 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-0">
+          <div className="flex items-center justify-between">
+            <Logo />
+            <div className="sm:hidden">
+              <ThemeToggle />
+            </div>
+          </div>
+          <nav aria-label="Public" className="flex flex-wrap items-center gap-2">
             {publicNavItems
               .filter((item) => item.href !== '/')
               .map((item) => (
@@ -35,7 +40,9 @@ export function PublicLayout({ children, className }: PublicLayoutProps) {
                   </NavLink>
                 </Button>
               ))}
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
           </nav>
         </div>
       </header>
