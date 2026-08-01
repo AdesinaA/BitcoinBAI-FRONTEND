@@ -1,0 +1,224 @@
+/* ════════════════════════════════════════════════════════════════════
+   Bitcoin BAI — Design Language v2 "Private Bank"
+   Dark-mode first. Deep charcoal surfaces. One accent: Bitcoin Gold.
+   Inspired by Mercury, Stripe, Linear, Ramp. Timeless, not trendy.
+   ════════════════════════════════════════════════════════════════════ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────── Tokens: Dark (default) ─────────────────────────── */
+:root {
+  /* Canvas & surfaces — deep charcoal with a cool undertone, never pure black */
+  --background: 228 12% 5%;          /* #0A0B0F  page canvas */
+  --surface: 228 10% 8%;             /* #121318  cards, panels */
+  --surface-elevated: 228 9% 11%;    /* #191B21  popovers, hovers, wells */
+  --surface-overlay: 228 9% 13%;     /* #1E2027  menus, floating layers */
+
+  /* Hairlines */
+  --border: 228 8% 15%;              /* #23252D */
+  --border-strong: 228 8% 22%;       /* #333640 */
+
+  /* Text */
+  --foreground: 220 14% 96%;         /* #F2F4F8  primary */
+  --text-primary: 220 14% 96%;
+  --text-secondary: 224 8% 64%;      /* #9AA0AE */
+  --text-tertiary: 225 7% 44%;       /* #686E7D */
+  --text-inverse: 228 12% 6%;        /* dark text for on-gold */
+
+  /* Electric Blue — strong, vivid primary accent. */
+  --accent: 217 100% 58%;            /* #2979FF electric blue */
+  --accent-hover: 217 100% 66%;      /* #4D8DFF */
+  --accent-active: 219 92% 50%;      /* #0A5CF5 */
+  --accent-foreground: 0 0% 100%;    /* white on blue */
+  --accent-soft: 217 100% 58%;       /* used at /10 /15 alpha for tints */
+  --accent-muted: 217 60% 45%;       /* subdued blue */
+
+  /* Status — solid + readable-on-solid + tint-text variants */
+  --success: 158 64% 42%;            /* #26A97C */
+  --success-foreground: 160 80% 92%;
+  --warning: 38 92% 50%;             /* #F59E0B */
+  --warning-foreground: 35 90% 12%;
+  --danger: 0 72% 56%;               /* #E5484D */
+  --danger-foreground: 0 90% 96%;
+  --info: 215 90% 62%;               /* #4593F8 */
+  --info-foreground: 215 95% 94%;
+
+  /* Interaction */
+  --ring: 217 100% 58%;              /* electric blue focus rings */
+  --input: 228 8% 17%;               /* input borders, slightly above --border */
+
+  /* Floating layers */
+  --popover: 228 9% 11%;
+  --popover-foreground: 220 14% 96%;
+
+  /* Scrim behind modals/drawers */
+  --overlay: 228 12% 3%;             /* consumed at /70 alpha */
+
+  /* Aliases consumed by generated/shadcn-style components */
+  --card: 228 10% 8%;
+  --card-foreground: 220 14% 96%;
+  --muted: 228 9% 11%;
+  --muted-foreground: 225 7% 50%;
+  --destructive: 0 72% 56%;
+  --destructive-foreground: 0 90% 96%;
+
+  /* Type + shape */
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --radius: 0.625rem; /* 10px — crisp, financial */
+}
+
+/* ─────────────────────────── Tokens: Light ─────────────────────────── */
+[data-theme='light'],
+.light {
+  --background: 220 20% 98%;         /* #F8FAFC */
+  --surface: 0 0% 100%;
+  --surface-elevated: 220 18% 96%;
+  --surface-overlay: 0 0% 100%;
+
+  --border: 220 14% 90%;
+  --border-strong: 220 12% 82%;
+
+  --foreground: 228 14% 10%;
+  --text-primary: 228 14% 10%;
+  --text-secondary: 226 8% 40%;
+  --text-tertiary: 225 7% 56%;
+  --text-inverse: 0 0% 100%;
+
+  --accent: 221 92% 50%;             /* strong royal blue for light bg */
+  --accent-hover: 221 92% 44%;
+  --accent-active: 221 90% 38%;
+  --accent-foreground: 0 0% 100%;
+  --accent-soft: 221 92% 52%;
+  --accent-muted: 221 55% 42%;
+
+  --success: 158 74% 30%;
+  --success-foreground: 0 0% 100%;
+  --warning: 35 92% 38%;
+  --warning-foreground: 0 0% 100%;
+  --danger: 0 72% 46%;
+  --danger-foreground: 0 0% 100%;
+  --info: 215 85% 45%;
+  --info-foreground: 0 0% 100%;
+
+  --ring: 221 92% 50%;
+  --input: 220 13% 86%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 228 14% 10%;
+
+  --overlay: 228 14% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 228 14% 10%;
+  --muted: 220 18% 95%;
+  --muted-foreground: 225 7% 48%;
+  --destructive: 0 72% 46%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+/* ─────────────────────────── Base ─────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-text-primary;
+    font-family: var(--font-inter);
+    font-feature-settings: 'rlig' 1, 'calt' 1, 'cv11' 1;
+  }
+
+  /* Financial numbers everywhere align beautifully */
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  ::selection {
+    background: hsl(var(--accent) / 0.25);
+  }
+
+  /* Refined scrollbars (WebKit) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-strong));
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--text-tertiary));
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ─────────────────────────── Utilities ─────────────────────────── */
+@layer utilities {
+  /* Tabular figures — mandatory for balances, tables, tickers */
+  .font-numeric {
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Hero balance treatment */
+  .text-balance-hero {
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+
+  /* Subtle gold text gradient for hero moments only */
+  .text-gradient-gold {
+    @apply bg-gradient-to-br from-accent via-accent to-accent-muted bg-clip-text text-transparent;
+  }
+
+  /* Premium card sheen — top hairline highlight (Mercury/Linear style) */
+  .card-sheen {
+    background-image: linear-gradient(
+      to bottom,
+      hsl(var(--foreground) / 0.03),
+      transparent 32px
+    );
+  }
+
+  /* Elevated glass for floating layers */
+  .glass {
+    @apply border border-border/60 bg-surface-overlay/85 backdrop-blur-xl;
+  }
+
+  /* Interactive row/card hover */
+  .hover-raise {
+    @apply transition-all duration-150 hover:border-border-strong hover:bg-surface-elevated/60;
+  }
+
+  /* Dashed drop-zone / empty surface */
+  .surface-dashed {
+    @apply rounded-lg border border-dashed border-border-strong/70;
+  }
+}

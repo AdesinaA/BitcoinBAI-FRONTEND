@@ -1,0 +1,7 @@
+'use client'
+
+import { AdminAuditLogsView } from '@/features/admin/components/admin-audit-logs-view'
+
+export default function Page() {
+  return <AdminAuditLogsView />
+}
