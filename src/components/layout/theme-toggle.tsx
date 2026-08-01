@@ -12,7 +12,13 @@ import { Button } from '@/components/ui/button'
  * preference configured in the root ThemeProvider. Renders a ghost
  * icon button with an animated Sun/Moon cross-fade.
  */
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({
+  className,
+  size = 'icon',
+}: {
+  className?: string
+  size?: 'icon' | 'icon-sm'
+}) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
@@ -24,7 +30,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   return (
     <Button
       variant="ghost"
-      size="icon"
+      size={size}
       aria-label="Toggle theme"
       className={cn('relative', className)}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
