@@ -503,7 +503,7 @@ export function AdminWalletsView() {
           <DialogHeader>
             <DialogTitle>Credit Wallet</DialogTitle>
             <DialogDescription>
-              Manually credit BTC to a user's wallet. This will be reflected
+              Manually credit BTC to a user&apos;s wallet. This will be reflected
               immediately in their available balance.
             </DialogDescription>
           </DialogHeader>
