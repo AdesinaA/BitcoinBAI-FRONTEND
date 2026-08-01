@@ -406,7 +406,7 @@ export function AdminWalletsView() {
             <DialogTitle>Reject Withdrawal</DialogTitle>
             <DialogDescription>
               Provide a reason for rejecting this withdrawal request. The
-              reserved funds will be refunded to the user's available balance.
+              reserved funds will be refunded to the user&apos;s available balance.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">

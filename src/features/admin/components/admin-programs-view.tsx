@@ -70,7 +70,7 @@ function SettingRow({
   onEdit,
   onUpdate,
   onDelete,
-  isUpdating,
+  isUpdating: _isUpdating,
   isDeleting,
 }: {
   setting: SettingItem

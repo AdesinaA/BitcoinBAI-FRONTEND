@@ -1,5 +1,7 @@
+'use client'
+
 /**
- * Bitcoin BAI Design System — Demo Page
+* Bitcoin BAI Design System — Demo Page
  * Phase DS-001
  *
  * This page demonstrates every component in the design system.
