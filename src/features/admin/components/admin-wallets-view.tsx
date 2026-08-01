@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination } from '@/components/ui/pagination'
 import { Select } from '@/components/ui/select'
@@ -111,6 +112,12 @@ export function AdminWalletsView() {
   const [rejectWithdrawal, setRejectWithdrawal] =
     React.useState<AdminWithdrawalItem | null>(null)
   const [rejectReason, setRejectReason] = React.useState('')
+
+  // Credit wallet dialog state
+  const [creditOpen, setCreditOpen] = React.useState(false)
+  const [creditEmail, setCreditEmail] = React.useState('')
+  const [creditAmount, setCreditAmount] = React.useState('')
+  const [creditDescription, setCreditDescription] = React.useState('')
 
   const params: ListWithdrawalsParams = { page, limit: PAGE_SIZE }
   if (statusFilter) params.status = statusFilter
@@ -205,6 +212,50 @@ export function AdminWalletsView() {
     setPage(1)
   }
 
+  const creditMutation = useMutation({
+    mutationFn: adminService.creditWallet,
+    onSuccess: () => {
+      toast({ title: 'Wallet credited' })
+      setCreditOpen(false)
+      setCreditEmail('')
+      setCreditAmount('')
+      setCreditDescription('')
+      invalidate()
+    },
+    onError: (error) => {
+      toast({
+        title: 'Credit failed',
+        description: getApiErrorMessage(error),
+        variant: 'destructive',
+      })
+    },
+  })
+
+  const handleCreditWallet = () => {
+    if (!creditEmail || !creditAmount) {
+      toast({
+        title: 'Missing fields',
+        description: 'Please enter a user email and amount.',
+        variant: 'destructive',
+      })
+      return
+    }
+    const amount = parseFloat(creditAmount)
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: 'Invalid amount',
+        description: 'Please enter a valid amount in BTC.',
+        variant: 'destructive',
+      })
+      return
+    }
+    creditMutation.mutate({
+      email: creditEmail,
+      amount,
+      description: creditDescription || undefined,
+    })
+  }
+
   const total = withdrawalsData?.total ?? 0
   const totalPages = withdrawalsData?.totalPages ?? 1
   const currentPage = withdrawalsData?.page ?? page
@@ -219,6 +270,12 @@ export function AdminWalletsView() {
         <p className="text-sm text-muted-foreground">
           View and manage member wallet balances and withdrawal requests.
         </p>
+        <div className="mt-4">
+          <Button onClick={() => setCreditOpen(true)}>
+            <DollarSign className="h-4 w-4 mr-2" />
+            Credit Wallet
+          </Button>
+        </div>
       </div>
 
       {/* Wallet overview stat cards */}
@@ -435,6 +492,72 @@ export function AdminWalletsView() {
               onClick={confirmReject}
             >
               Confirm Rejection
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Credit wallet dialog — manual balance top-up by admin */}
+      <Dialog open={creditOpen} onOpenChange={setCreditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Credit Wallet</DialogTitle>
+            <DialogDescription>
+              Manually credit BTC to a user's wallet. This will be reflected
+              immediately in their available balance.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="credit-email">User Email</Label>
+              <Input
+                id="credit-email"
+                type="email"
+                placeholder="user@example.com"
+                value={creditEmail}
+                onChange={(e) => setCreditEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="credit-amount">Amount (BTC)</Label>
+              <Input
+                id="credit-amount"
+                type="number"
+                step="0.00000001"
+                min="0"
+                placeholder="0.00000000"
+                value={creditAmount}
+                onChange={(e) => setCreditAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="credit-description">Description (optional)</Label>
+              <Textarea
+                id="credit-description"
+                placeholder="e.g. Deposit received via bank transfer"
+                value={creditDescription}
+                onChange={(e) => setCreditDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCreditOpen(false)
+                setCreditEmail('')
+                setCreditAmount('')
+                setCreditDescription('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              disabled={creditMutation.isPending}
+              onClick={handleCreditWallet}
+            >
+              Credit Wallet
             </Button>
           </DialogFooter>
         </DialogContent>

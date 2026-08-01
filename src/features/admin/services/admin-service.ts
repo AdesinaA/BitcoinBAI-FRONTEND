@@ -4,6 +4,8 @@ import type {
   AdminMetrics,
   AdminStatistics,
   ApiSuccess,
+  CreditWalletPayload,
+  CreditWalletResult,
   ListAuditLogsParams,
   ListWithdrawalsParams,
   PaginatedAuditLogs,
@@ -77,6 +79,16 @@ export async function rejectWithdrawal(
 }
 
 /* --------------------------- Wallet operations ---------------------------- */
+
+export async function creditWallet(
+  payload: CreditWalletPayload
+): Promise<CreditWalletResult> {
+  const { data } = await apiClient.post<ApiSuccess<CreditWalletResult>>(
+    `/admin/wallets/credit`,
+    { email: payload.email, amount: payload.amount, description: payload.description }
+  )
+  return data.data
+}
 
 export async function getWalletsOverview(): Promise<WalletsOverview> {
   const { data } = await apiClient.get<ApiSuccess<WalletsOverview>>(

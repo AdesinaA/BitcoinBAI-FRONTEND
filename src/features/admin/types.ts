@@ -62,6 +62,24 @@ export interface WalletsOverview {
   recentWithdrawals: AdminWithdrawalItem[]
 }
 
+export interface CreditWalletPayload {
+  email: string
+  amount: number
+  description?: string
+}
+
+export interface CreditWalletResult {
+  userId: string
+  userEmail?: string | null
+  userName?: string | null
+  walletId: string
+  bitcoinAddress: string
+  balance: number
+  totalDeposited: number
+  amountCredited: number
+  transactionId: string
+}
+
 export type WithdrawalStatus =
   | 'pending'
   | 'approved'

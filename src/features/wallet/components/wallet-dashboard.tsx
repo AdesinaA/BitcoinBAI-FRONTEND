@@ -162,18 +162,7 @@ export function WalletDashboard() {
       .catch(() => setChainStatus(null))
   }, [])
 
-  // Auto-sync deposits for real-time balance updates (every 15 s).
-  React.useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        await bitcoinService.syncDeposits()
-        await loadSummary()
-      } catch {
-        /* balance simply won't update this tick */
-      }
-    }, 15000)
-    return () => clearInterval(interval)
-  }, [loadSummary])
+  // Auto-sync disabled — wallet balances are managed manually by admins.
 
   /* ------------------------------ Deposit sync ----------------------------- */
 
