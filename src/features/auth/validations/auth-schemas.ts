@@ -48,7 +48,7 @@ export const registerSchema = z
       .or(z.literal('')),
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),
-    referralCode: z.string().optional().or(z.literal('')),
+    referralCode: z.string().min(1, 'Referral code is required'),
   })
   .refine((values) => values.password === values.confirmPassword, {
     message: 'Passwords do not match',

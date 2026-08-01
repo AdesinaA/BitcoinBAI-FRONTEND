@@ -43,7 +43,7 @@ export function RegisterForm() {
       await authService.register({
         ...payload,
         phone: payload.phone || undefined,
-        referralCode: payload.referralCode || undefined,
+        referralCode: payload.referralCode,
       })
       toast({
         title: 'Account created',
@@ -164,7 +164,7 @@ export function RegisterForm() {
           name="referralCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Referral code (optional)</FormLabel>
+              <FormLabel>Referral code</FormLabel>
               <FormControl>
                 <Input placeholder="REF123" {...field} />
               </FormControl>
