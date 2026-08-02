@@ -24,11 +24,11 @@ export async function getPool(poolId: string): Promise<Pool> {
 
 export async function invest(
   poolId: string,
-  amountSatoshis: number
+  amount: number
 ): Promise<InvestResult> {
   const { data } = await apiClient.post<ApiSuccess<InvestResult>>(
     '/pools/invest',
-    { poolId, amount: amountSatoshis }
+    { poolId, amount: amount }
   )
   return data.data
 }

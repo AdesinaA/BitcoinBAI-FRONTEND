@@ -42,15 +42,14 @@ export async function getTransactions(
   return data.data
 }
 
-/** Amount is provided in BTC and converted to satoshis for the API. */
+/** Amount is provided in BTC and sent as-is. */
 export async function createWithdrawal(
   amountBtc: number,
   bitcoinAddress: string
 ): Promise<WithdrawalResult> {
-  const satoshis = Math.round(amountBtc * 100_000_000)
   const { data } = await apiClient.post<ApiSuccess<WithdrawalResult>>(
     '/wallet/withdrawals',
-    { amount: satoshis, bitcoinAddress }
+    { amount: amountBtc, bitcoinAddress }
   )
   return data.data
 }
@@ -62,17 +61,15 @@ export async function getMnemonic(): Promise<MnemonicInfo> {
 }
 
 /**
- * Send Bitcoin to an external address. Amount is in BTC; converted to
- * satoshis before sending to the API.
+ * Send Bitcoin to an external address. Amount is in BTC and sent as-is.
  */
 export async function sendPayment(
   toAddress: string,
   amountBtc: number
 ): Promise<SendPaymentResult> {
-  const satoshis = Math.round(amountBtc * 100_000_000)
   const { data } = await apiClient.post<ApiSuccess<SendPaymentResult>>(
     '/wallet/send',
-    { amount: satoshis, bitcoinAddress: toAddress }
+    { amount: amountBtc, bitcoinAddress: toAddress }
   )
   return data.data
 }
