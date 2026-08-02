@@ -43,7 +43,6 @@ import type {
 } from '../types'
 
 const PAGE_SIZE = 10
-const SATOSHIS_PER_BTC = 100_000_000
 
 function formatBtc(amount: number): string {
   return amount.toLocaleString(undefined, {
@@ -55,10 +54,6 @@ function formatBtc(amount: number): string {
 function formatUsd(amount: number | undefined | null): string {
   if (amount == null) return '—'
   return `$${amount.toLocaleString('en-US')}`
-}
-
-function toSatoshis(btc: number): number {
-  return Math.round(btc * SATOSHIS_PER_BTC)
 }
 
 function statusVariant(status: string) {
@@ -123,7 +118,7 @@ export function PoolDashboard() {
     try {
       const result = await poolService.invest(
         selectedPool.poolId,
-        toSatoshis(selectedPool.minInvestment)
+        selectedPool.minInvestment
       )
       toast({
         title: 'Investment successful',
