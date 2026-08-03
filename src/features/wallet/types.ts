@@ -84,6 +84,7 @@ export interface WithdrawalResult {
   netAmount: number
   status: WithdrawalStatus
   bitcoinTxId?: string
+  message?: string
 }
 
 /** Mnemonic + derivation info returned by GET /wallet/mnemonic. */
