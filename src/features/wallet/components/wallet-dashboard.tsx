@@ -228,7 +228,7 @@ export function WalletDashboard() {
       const result = await walletService.createWithdrawal(amount, withdrawAddress)
       toast({
         variant: 'success',
-        title: 'Withdrawal submitted',
+        title: result.message || 'Withdrawal submitted',
         description: `Net ${formatBtc(result.netAmount)} BTC (fee ${formatBtc(result.fee)}).`,
       })
       setWithdrawOpen(false)
@@ -236,9 +236,10 @@ export function WalletDashboard() {
       setWithdrawAddress('')
       await Promise.all([loadSummary(), loadTransactions()])
     } catch (error) {
+      const errorMsg = getApiErrorMessage(error)
       toast({
-        title: 'Withdrawal failed',
-        description: getApiErrorMessage(error),
+        title: errorMsg.includes('Insufficient balance') ? 'Insufficient balance' : 'Withdrawal failed',
+        description: errorMsg,
         variant: 'destructive',
       })
     } finally {
