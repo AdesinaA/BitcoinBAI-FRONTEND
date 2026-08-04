@@ -11,7 +11,7 @@ import type { ToastActionElement, ToastProps } from '@/components/ui/toast'
  */
 
 const TOAST_LIMIT = 3
-const TOAST_REMOVE_DELAY = 5000
+const TOAST_REMOVE_DELAY = 1000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -113,7 +113,7 @@ function dispatch(action: Action) {
 export type Toast = Omit<ToasterToast, 'id'>
 
 /** Default time (ms) a toast stays visible before auto-dismissing. */
-const TOAST_DEFAULT_DURATION = 5000
+const TOAST_DEFAULT_DURATION = 3000
 
 function toast({ ...props }: Toast) {
   const id = genId()
