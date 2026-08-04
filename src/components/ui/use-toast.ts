@@ -112,6 +112,9 @@ function dispatch(action: Action) {
 
 export type Toast = Omit<ToasterToast, 'id'>
 
+/** Default time (ms) a toast stays visible before auto-dismissing. */
+const TOAST_DEFAULT_DURATION = 5000
+
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -131,6 +134,15 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // Guaranteed auto-dismiss. Radix's internal close timer can be paused
+  // (hover/focus/viewport state), so we enforce dismissal with our own timer.
+  // Callers can pass `duration` to customise; `Infinity` keeps the toast sticky.
+  const duration =
+    typeof props.duration === 'number' ? props.duration : TOAST_DEFAULT_DURATION
+  if (Number.isFinite(duration)) {
+    setTimeout(dismiss, duration)
+  }
 
   return { id, dismiss, update }
 }
