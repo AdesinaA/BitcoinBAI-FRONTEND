@@ -20,6 +20,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { useAuthStore } from '@/features/auth/store/auth-store'
 import { getApiErrorMessage } from '@/features/auth/utils/api-error'
 import { loginSchema, type LoginValues } from '@/features/auth/validations/auth-schemas'
+import { FloatingBitcoin } from '@/components/shared/floating-bitcoin'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -50,7 +51,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container flex min-h-[80vh] items-center justify-center">
+    <div className="relative overflow-hidden">
+      <FloatingBitcoin count={14} seed={7} />
+      <div className="container relative z-10 flex min-h-[80vh] items-center justify-center">
       <div className="w-full max-w-md space-y-8">
             {/* Security indicator */}
             <div className="flex flex-col items-center gap-3 text-center">
@@ -161,5 +164,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
+      </div>
       )
 }
