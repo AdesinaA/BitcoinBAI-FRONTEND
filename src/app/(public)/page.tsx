@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { FloatingBitcoin } from '@/components/shared/floating-bitcoin'
 
 export default function HomePage() {
   return (
@@ -23,6 +24,9 @@ export default function HomePage() {
         <div className="absolute left-[12%] top-[120px] h-[280px] w-[280px] rounded-full bg-info/20 blur-[120px]" />
         <div className="absolute right-[10%] top-[40px] h-[300px] w-[300px] rounded-full bg-accent/15 blur-[120px]" />
       </div>
+
+      {/* Floating Bitcoin logos */}
+      <FloatingBitcoin count={20} seed={42} />
 
       {/* Hero */}
       <section className="container py-20 md:py-28">
