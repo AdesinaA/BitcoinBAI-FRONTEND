@@ -44,6 +44,13 @@ import type {
 
 const PAGE_SIZE = 10
 
+/**
+ * Minimum time the invest processing state stays visible. The (simulated)
+ * backend responds instantly, so we hold the processing view briefly to
+ * make the action feel deliberate and give the user clear feedback.
+ */
+const MIN_INVEST_PROCESSING_MS = 1800
+
 function formatBtc(amount: number): string {
   return amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -116,10 +123,13 @@ export function PoolDashboard() {
     setInvestError('')
     setIsInvesting(true)
     try {
-      const result = await poolService.invest(
-        selectedPool.poolId,
-        selectedPool.minInvestment
-      )
+      // Wait for both the API call and the minimum processing duration,
+      // so the loading state is always visible for a smooth, deliberate
+      // amount of time even when the API responds instantly.
+      const [result] = await Promise.all([
+        poolService.invest(selectedPool.poolId, selectedPool.minInvestment),
+        new Promise((resolve) => setTimeout(resolve, MIN_INVEST_PROCESSING_MS)),
+      ])
       toast({
         title: 'Investment successful',
         description: `${formatBtc(result.amount)} BTC invested in ${result.poolName}. Expected return: ${formatBtc(result.expectedReturn)} BTC.`,
@@ -373,14 +383,34 @@ export function PoolDashboard() {
       </Card>
 
       {/* Invest dialog */}
-      <Dialog open={investDialogOpen} onOpenChange={setInvestDialogOpen}>
-        <DialogContent>
+      <Dialog
+        open={investDialogOpen}
+        onOpenChange={(open) => {
+          // Lock the dialog while the investment is being processed so the
+          // user cannot dismiss it mid-flight (X, Escape or overlay click).
+          if (!isInvesting) setInvestDialogOpen(open)
+        }}
+      >
+        <DialogContent hideClose={isInvesting}>
           <DialogHeader>
             <DialogTitle>
               Invest in {selectedPool?.name ?? 'pool'}
             </DialogTitle>
           </DialogHeader>
-          {selectedPool ? (
+          {isInvesting ? (
+            <div className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+              <Loader2
+                className="h-10 w-10 animate-spin text-gold"
+                aria-hidden="true"
+              />
+              <div>
+                <p className="font-medium">Processing investment…</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Please wait while we confirm your investment.
+                </p>
+              </div>
+            </div>
+          ) : selectedPool ? (
             <div className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between">
