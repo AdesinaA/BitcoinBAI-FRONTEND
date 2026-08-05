@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Copy,
   Clock,
+  Loader2,
   // Key, // Hidden: recovery phrase feature commented out
 } from 'lucide-react'
 
@@ -56,6 +57,13 @@ import type {
 
 const PAGE_SIZE = 10
 
+/**
+ * Minimum time the withdraw processing state stays visible. The backend
+ * responds instantly, so we hold the processing view briefly to make the
+ * action feel deliberate and give the user clear feedback.
+ */
+const MIN_WITHDRAW_PROCESSING_MS = 1800
+
 const _STATUS_VARIANT: Record<
   TransactionStatus,
   'success' | 'warning' | 'info' | 'destructive' | 'secondary'
@@ -101,6 +109,7 @@ export function WalletDashboard() {
   const [withdrawOpen, setWithdrawOpen] = React.useState(false)
   const [depositAddress, setDepositAddress] = React.useState<string>('')
   const [isDepositing, setIsDepositing] = React.useState(false)
+  const [isSyncing, setIsSyncing] = React.useState(false)
 
   const [withdrawAmount, setWithdrawAmount] = React.useState('')
   const [withdrawAddress, setWithdrawAddress] = React.useState('')
@@ -167,6 +176,8 @@ export function WalletDashboard() {
   /* ------------------------------ Deposit sync ----------------------------- */
 
   async function onSyncDeposits() {
+    if (isSyncing) return
+    setIsSyncing(true)
     try {
       await bitcoinService.syncDeposits()
       toast({ variant: 'success', title: 'Deposits synced' })
@@ -177,6 +188,8 @@ export function WalletDashboard() {
         description: getApiErrorMessage(error),
         variant: 'destructive',
       })
+    } finally {
+      setIsSyncing(false)
     }
   }
 
@@ -214,6 +227,7 @@ export function WalletDashboard() {
 
   async function onWithdraw(e: React.FormEvent) {
     e.preventDefault()
+    if (isWithdrawing) return
     const amount = Number.parseFloat(withdrawAmount)
     if (!Number.isFinite(amount) || amount <= 0) {
       toast({ variant: 'destructive', title: 'Enter a valid amount' })
@@ -224,8 +238,16 @@ export function WalletDashboard() {
       return
     }
     setIsWithdrawing(true)
+    const startedAt = Date.now()
     try {
       const result = await walletService.createWithdrawal(amount, withdrawAddress)
+      // Hold the processing view for the minimum duration so the loading
+      // state is always visible, even when the API responds instantly.
+      const remaining = Math.max(
+        MIN_WITHDRAW_PROCESSING_MS - (Date.now() - startedAt),
+        0
+      )
+      await new Promise((resolve) => setTimeout(resolve, remaining))
       toast({
         variant: 'success',
         title: result.message || 'Withdrawal submitted',
@@ -237,6 +259,11 @@ export function WalletDashboard() {
       await Promise.all([loadSummary(), loadTransactions()])
     } catch (error) {
       const errorMsg = getApiErrorMessage(error)
+      const remaining = Math.max(
+        MIN_WITHDRAW_PROCESSING_MS - (Date.now() - startedAt),
+        0
+      )
+      await new Promise((resolve) => setTimeout(resolve, remaining))
       toast({
         title: errorMsg.includes('Insufficient balance') ? 'Insufficient balance' : 'Withdrawal failed',
         description: errorMsg,
@@ -280,6 +307,7 @@ export function WalletDashboard() {
               variant="secondary"
               size="sm"
               onClick={onSyncDeposits}
+              loading={isSyncing}
               aria-label="Sync deposits"
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -544,55 +572,79 @@ export function WalletDashboard() {
       */}
 
       {/* Withdraw dialog */}
-      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
-        <DialogContent>
+      <Dialog
+        open={withdrawOpen}
+        onOpenChange={(open) => {
+          // Lock the dialog while the withdrawal is being processed so the
+          // user cannot dismiss it mid-flight (X, Escape or overlay click).
+          if (!isWithdrawing) setWithdrawOpen(open)
+        }}
+      >
+        <DialogContent hideClose={isWithdrawing}>
           <DialogHeader>
             <DialogTitle>Withdraw Bitcoin</DialogTitle>
-            <DialogDescription>
-              Available balance:{' '}
-              <span className="font-medium text-text-primary">
-                {summary ? `${formatBtc(summary.balance)} BTC` : '—'}
-              </span>
-            </DialogDescription>
+            {!isWithdrawing ? (
+              <DialogDescription>
+                Available balance:{' '}
+                <span className="font-medium text-text-primary">
+                  {summary ? `${formatBtc(summary.balance)} BTC` : '—'}
+                </span>
+              </DialogDescription>
+            ) : null}
           </DialogHeader>
-          <form onSubmit={onWithdraw} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="withdraw-amount">Amount (BTC)</Label>
-              <Input
-                id="withdraw-amount"
-                type="number"
-                step="0.00000001"
-                min="0"
-                inputMode="decimal"
-                placeholder="0.00000000"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                required
+          {isWithdrawing ? (
+            <div className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+              <Loader2
+                className="h-10 w-10 animate-spin text-gold"
+                aria-hidden="true"
               />
+              <div>
+                <p className="font-medium">Processing withdrawal request…</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Please wait while we submit your withdrawal for processing.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="withdraw-address">Destination Bitcoin address</Label>
-              <Input
-                id="withdraw-address"
-                placeholder="bc1q…"
-                value={withdrawAddress}
-                onChange={(e) => setWithdrawAddress(e.target.value)}
-                required
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setWithdrawOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" isLoading={isWithdrawing}>
-                Submit withdrawal
-              </Button>
-            </DialogFooter>
-          </form>
+          ) : (
+            <form onSubmit={onWithdraw} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="withdraw-amount">Amount (BTC)</Label>
+                <Input
+                  id="withdraw-amount"
+                  type="number"
+                  step="0.00000001"
+                  min="0"
+                  inputMode="decimal"
+                  placeholder="0.00000000"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="withdraw-address">Destination Bitcoin address</Label>
+                <Input
+                  id="withdraw-address"
+                  placeholder="bc1q…"
+                  value={withdrawAddress}
+                  onChange={(e) => setWithdrawAddress(e.target.value)}
+                  required
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setWithdrawOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" isLoading={isWithdrawing}>
+                  Submit withdrawal
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
     </PageShell>

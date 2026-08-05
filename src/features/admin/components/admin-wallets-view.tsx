@@ -405,6 +405,10 @@ export function AdminWalletsView() {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  loading={
+                                    approveMutation.isPending &&
+                                    approveMutation.variables === w.withdrawalId
+                                  }
                                   disabled={approveMutation.isPending}
                                   onClick={() => handleApprove(w)}
                                 >
@@ -488,6 +492,7 @@ export function AdminWalletsView() {
             </Button>
             <Button
               variant="destructive"
+              loading={rejectMutation.isPending}
               disabled={rejectMutation.isPending}
               onClick={confirmReject}
             >
@@ -554,6 +559,7 @@ export function AdminWalletsView() {
             </Button>
             <Button
               variant="primary"
+              loading={creditMutation.isPending}
               disabled={creditMutation.isPending}
               onClick={handleCreditWallet}
             >
