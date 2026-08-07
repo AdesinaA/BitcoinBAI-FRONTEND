@@ -21,19 +21,48 @@ export interface PaginatedResult<T> {
 /* ------------------------------------------------------------------ */
 
 export interface AdminMetrics {
-  totalUsers: number
-  totalWallets: number
-  totalBitcoinNodes: number
-  totalPools: number
-  totalCommissions: number
+  users: {
+    total: number
+    active: number
+    newLast30Days: number
+  }
+  wallets: {
+    count: number
+    totalBalance: number
+    totalPendingBalance: number
+    totalDeposited: number
+    totalWithdrawn: number
+  }
+  withdrawals: {
+    pendingCount: number
+    pendingAmount: number
+  }
+  transactions: {
+    total: number
+  }
+}
+
+export interface UsersByStatusEntry {
+  status: string
+  count: number
+}
+
+export interface TransactionsByTypeEntry {
+  type: string
+  count: number
+  volume: number
+}
+
+export interface WithdrawalsByStatusEntry {
+  status: string
+  count: number
+  amount: number
 }
 
 export interface AdminStatistics {
-  totalDeposited: number
-  totalWithdrawn: number
-  totalPoolInvestments: number
-  totalReferralRewards: number
-  totalCommissionRewards: number
+  usersByStatus: UsersByStatusEntry[]
+  transactionsByType: TransactionsByTypeEntry[]
+  withdrawalsByStatus: WithdrawalsByStatusEntry[]
 }
 
 export interface AdminHealth {
