@@ -180,6 +180,50 @@ export interface ListAuditLogsParams {
 }
 
 /* ------------------------------------------------------------------ */
+/* Users (admin user management)                                      */
+/* ------------------------------------------------------------------ */
+
+export type UserRole = 'user' | 'admin'
+
+export type UserStatus =
+  | 'pending'
+  | 'active'
+  | 'suspended'
+  | 'deactivated'
+
+export interface AdminUserItem {
+  userId: string
+  email: string
+  username: string
+  fullName?: string
+  phone?: string
+  bio?: string
+  avatar?: string
+  role: UserRole
+  status: UserStatus
+  emailVerified: boolean
+  referralCode?: string
+  lastLoginAt?: string
+  createdAt?: string
+}
+
+export interface PaginatedUsers {
+  items: AdminUserItem[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+export interface ListUsersParams {
+  page?: number
+  limit?: number
+  search?: string
+  status?: UserStatus
+  role?: UserRole
+}
+
+/* ------------------------------------------------------------------ */
 /* Settings                                                           */
 /* ------------------------------------------------------------------ */
 

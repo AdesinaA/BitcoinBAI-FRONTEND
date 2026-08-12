@@ -6,6 +6,8 @@ export type BinaryPosition = 'left' | 'right'
 
 export interface BinaryTreeNode {
   userId: string
+  /** Parent node's userId (null for the root of the returned subtree). */
+  parentId: string | null
   username: string
   position: BinaryPosition | null
   level: number

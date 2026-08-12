@@ -7,8 +7,10 @@ import type {
   CreditWalletPayload,
   CreditWalletResult,
   ListAuditLogsParams,
+  ListUsersParams,
   ListWithdrawalsParams,
   PaginatedAuditLogs,
+  PaginatedUsers,
   PaginatedWithdrawals,
   SettingItem,
   UpdateSettingPayload,
@@ -158,6 +160,18 @@ export async function deleteSetting(key: string): Promise<{ deleted: boolean }> 
 export async function getHealth(): Promise<AdminHealth> {
   const { data } = await apiClient.get<ApiSuccess<AdminHealth>>(
     '/admin/health'
+  )
+  return data.data
+}
+
+/* ---------------------------------- Users --------------------------------- */
+
+export async function listUsers(
+  params: ListUsersParams = {}
+): Promise<PaginatedUsers> {
+  const { data } = await apiClient.get<ApiSuccess<PaginatedUsers>>(
+    '/users/admin/list',
+    { params }
   )
   return data.data
 }
