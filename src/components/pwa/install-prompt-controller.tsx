@@ -7,7 +7,7 @@ import { useAuthStore } from '@/features/auth/store/auth-store'
 import { InstallAppSheet } from './install-app-sheet'
 
 /** How long after becoming authenticated before the sheet first appears. */
-const TRIGGER_DELAY_MS = 30_000
+const TRIGGER_DELAY_MS = 5_000
 
 /**
  * Session-level "snooze" so dismissing the sheet doesn't immediately
