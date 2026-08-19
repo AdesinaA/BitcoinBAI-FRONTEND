@@ -1,5 +1,6 @@
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { AuthGuard } from '@/features/auth/components/auth-guard'
+import { InstallPromptController } from '@/components/pwa/install-prompt-controller'
 
 /**
  * Route-group layout for all member dashboard routes
@@ -14,6 +15,8 @@ export default function DashboardGroupLayout({
   return (
     <AuthGuard>
       <DashboardLayout>{children}</DashboardLayout>
+      <InstallPromptController />
     </AuthGuard>
   )
 }
+
