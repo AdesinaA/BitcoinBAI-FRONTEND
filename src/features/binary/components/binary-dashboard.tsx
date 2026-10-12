@@ -182,14 +182,14 @@ export function BinaryDashboard() {
         <StatCard
           title="Current chain level"
           value={
-            stats.currentChainLevel >= 0
-              ? `Level ${stats.currentChainLevel}`
+            stats.currentChainLevel > 0
+              ? `Generation ${stats.currentChainLevel}`
               : '—'
           }
           icon={Layers}
           description={
-            stats.currentChainLevel >= 0
-              ? `$${Math.pow(2, stats.currentChainLevel) * 7} earned`
+            stats.currentChainLevel > 0
+              ? `$${3 * Math.pow(2, stats.currentChainLevel - 1)} earned`
               : 'Build your referral chain'
           }
         />
@@ -234,10 +234,10 @@ export function BinaryDashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <TrendingUp className="h-4 w-4 text-gold" />
-            Chain level progress
+            Generation progress
           </CardTitle>
           <CardDescription>
-            {stats.totalReferrals} / {stats.nextChainLevelThreshold} referrals to reach the next chain level.
+            {stats.totalReferrals} / {stats.nextChainLevelThreshold} members to reach the next generation.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -255,7 +255,7 @@ export function BinaryDashboard() {
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>{stats.nextChainLevelProgress}%</span>
               <span>
-                {stats.totalReferrals} / {stats.nextChainLevelThreshold} referrals
+                {stats.totalReferrals} / {stats.nextChainLevelThreshold} members
               </span>
             </div>
           </div>
@@ -279,12 +279,12 @@ export function BinaryDashboard() {
         </CardContent>
       </Card>
 
-      {/* Chain level rewards */}
+      {/* Generation rewards */}
       <Card>
         <CardHeader>
-          <CardTitle>Chain level rewards</CardTitle>
+          <CardTitle>Generation rewards</CardTitle>
           <CardDescription>
-            Your referral chain: each level doubles the required referrals and the reward.
+            Each generation doubles the required members and the reward.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -292,8 +292,8 @@ export function BinaryDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Level</TableHead>
-                  <TableHead>Referrals required</TableHead>
+                  <TableHead>Generation</TableHead>
+                  <TableHead>Members required</TableHead>
                   <TableHead>Reward</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
